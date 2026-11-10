@@ -1,0 +1,82 @@
+AWF verification and pre-PR security record
+Recorded: 2026-11-10T13:58:56.188051+00:00
+
+$ python3 scripts/verify.py
+AWF reference distribution verification
+Time: 2026-11-10T13:58:56.216194+00:00
+Python: 3.9.6
+PASS distribution and local links: 29 Markdown files (template checked after install)
+PASS five Practice definitions (metadata presence; semantics reviewed separately)
+PASS both domains reference the identical Core files
+PASS 7 state records (field presence, not truth of claims)
+PASS documented fresh install: 3 files, paths with spaces, Core unchanged, links resolve
+PASS existing AGENTS/override/.awf and dangling entry preserved; reinstall refused
+
+RED: identical boundary tests against examples/software-development/before/expiry.py
+test_after_expiry (test_expiry.ExpiryTests) ... ok
+test_at_expiry (test_expiry.ExpiryTests) ... FAIL
+test_before_expiry (test_expiry.ExpiryTests) ... ok
+
+======================================================================
+FAIL: test_at_expiry (test_expiry.ExpiryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<temporary-directory>/RED/test_expiry.py", line 11, in test_at_expiry
+    self.assertTrue(is_expired(expires_at=100, now=100))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+FAILED (failures=1)
+
+GREEN: identical boundary tests against examples/software-development/expiry.py
+test_after_expiry (test_expiry.ExpiryTests) ... ok
+test_at_expiry (test_expiry.ExpiryTests) ... ok
+test_before_expiry (test_expiry.ExpiryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+
+PASS boundary regression: old code fails at equality; fixed code passes all 3
+PASS all executable checks. This is not a runtime enforcement or model compliance test.
+Exit code: 0
+
+$ python3 -m unittest discover -s examples/software-development -p test_*.py -v
+test_after_expiry (test_expiry.ExpiryTests) ... ok
+test_at_expiry (test_expiry.ExpiryTests) ... ok
+test_before_expiry (test_expiry.ExpiryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+Exit code: 0
+
+$ python3 -m unittest discover -s tests -v
+test_modified_readme_command_is_rejected (test_security.SecurityTests) ... ok
+test_parent_traversal_link_is_rejected (test_security.SecurityTests) ... ok
+test_scanner_finds_private_key_header (test_security.SecurityTests) ... ok
+test_scanner_finds_synthetic_tokens_without_returning_values (test_security.SecurityTests) ... ok
+test_source_symlink_is_rejected_before_writes (test_security.SecurityTests) ... ok
+test_symlink_link_outside_scope_is_rejected (test_security.SecurityTests) ... ok
+test_unapproved_command_never_starts_process (test_security.SecurityTests) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.011s
+
+OK
+Exit code: 0
+
+$ python3 scripts/check_secrets.py
+PASS limited secret-pattern scan: 39 files, 7 rules, no matches
+Scope: current tracked and non-ignored untracked files; excludes Git history and ignored files.
+Exit code: 0
+
+$ cmp SPEC.md agent-working-framework-spec.md
+Exit code: 0
+
+$ git diff --check
+Exit code: 0
